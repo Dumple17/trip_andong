@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>안동·청송 가족여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: single mobile column — title block, sticky day tabs, a vertical time rail of stops per day, then family tips */
+:root{
+  --bg:#F3F5F1; --surface:#FFFFFF; --ink:#1C2624; --muted:#5D6A66; --line:#DCE2DC;
+  --indigo:#2B4A86; --indigo-soft:#E5EAF4; --pine:#3D6A4C; --pine-soft:#E4EEE6; --persimmon:#C2562B;
+  --display:"Gowun Batang", "Nanum Myeongjo", serif;
+  --body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --surface:#1A2220; --ink:#E7ECE8; --muted:#9AA8A3; --line:#2C3633;
+  --indigo:#8EA9E0; --indigo-soft:#1F2A40; --pine:#8CC09C; --pine-soft:#1C2E23; --persimmon:#E8875E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --surface:#1A2220; --ink:#E7ECE8; --muted:#9AA8A3; --line:#2C3633;
+  --indigo:#8EA9E0; --indigo-soft:#1F2A40; --pine:#8CC09C; --pine-soft:#1C2E23; --persimmon:#E8875E; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
+header h1{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.25;margin:4px 0 8px;text-wrap:balance}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;color:var(--indigo);font-weight:600}
+.route{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none;font-size:.85rem;color:var(--muted)}
+.route li{display:flex;align-items:center;gap:6px}
+.route li+li::before{content:"→";color:var(--line)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:22px -16px 0;padding:10px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tab{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;line-height:1.3}
+.tab b{display:block;font-family:var(--display);font-size:1.05rem}
+.tab span{font-size:.72rem;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--indigo);border-color:var(--indigo);color:var(--surface)}
+.tab[aria-selected="true"] span{color:var(--surface);opacity:.85}
+.tab:focus-visible,a:focus-visible{outline:2px solid var(--persimmon);outline-offset:2px}
+
+.day{padding-top:20px}
+.day h2{font-family:var(--display);font-size:1.35rem;margin:0 0 4px}
+.day .sub{color:var(--muted);font-size:.88rem;margin:0 0 18px}
+
+.rail{list-style:none;margin:0;padding:0;position:relative}
+.rail::before{content:"";position:absolute;left:52px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.stop{display:grid;grid-template-columns:46px 1fr;gap:16px;padding-bottom:18px;position:relative}
+.time{font-variant-numeric:tabular-nums;font-weight:600;font-size:.88rem;text-align:right;padding-top:2px;color:var(--indigo)}
+.time small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+.stop::after{content:"";position:absolute;left:48px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--indigo)}
+.stop.move::after{border-color:var(--muted);background:var(--muted);width:8px;height:8px;left:49px;top:9px}
+.body{min-width:0;padding-left:8px}
+.body h3{margin:0;font-size:1.02rem;font-weight:600;line-height:1.4}
+.move .body h3{font-weight:500;color:var(--muted);font-size:.93rem}
+.desc{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.body ul{margin:8px 0 0;padding-left:18px;font-size:.9rem}
+.body li{margin-bottom:3px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:.75rem;padding:3px 9px;border-radius:999px;background:var(--indigo-soft);color:var(--indigo);text-decoration:none;font-weight:500}
+.chip.kid{background:var(--pine-soft);color:var(--pine)}
+a.chip::after{content:" ↗"}
+
+.choice{border:1px dashed var(--pine);border-radius:12px;padding:12px 14px;display:grid;gap:14px;margin-top:4px}
+.choice-label{font-size:.78rem;font-weight:600;color:var(--pine);letter-spacing:.04em}
+.choice .opt+.opt{border-top:1px solid var(--line);padding-top:12px}
+.or{font-family:var(--display);color:var(--pine)}
+
+.eat{margin-top:12px;display:grid;gap:10px}
+.eat-label{font-size:.78rem;font-weight:600;color:var(--persimmon);letter-spacing:.04em}
+.shop{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.shop-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.shop h4{margin:0;font-size:.98rem;font-weight:600}
+.shop p{margin:0;font-size:.88rem;color:var(--ink)}
+.shop small{font-size:.75rem;color:var(--muted)}
+.tag{flex:none;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--indigo-soft);color:var(--indigo)}
+.tag.beef{background:var(--pine-soft);color:var(--pine)}
+.shop-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tel{font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem;user-select:all;-webkit-user-select:all}
+.shop-foot .chip{margin:0}
+.tips{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 8px}
+.tips h2{font-family:var(--display);font-size:1.2rem;margin:0 0 10px}
+.tips ol{margin:0;padding-left:20px}
+.tips li{margin-bottom:12px}
+.tips li b{display:block}
+.note{margin-top:20px;font-size:.78rem;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.day{animation:fade .25s ease}}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">2박 3일 · 가족여행</div>
+    <h1>안동·청송 가을 여행 일정표</h1>
+    <ul class="route" aria-label="여행 경로">
+      <li>부산</li><li>안동</li><li>청송 주왕산</li><li>안동 하회마을</li><li>부산</li>
+    </ul>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="일차 선택">
+    <button class="tab" role="tab" id="tab-day1" aria-controls="day1" aria-selected="true"><b>1일차</b><span>안동 도심·탈춤</span></button>
+    <button class="tab" role="tab" id="tab-day2" aria-controls="day2" aria-selected="false"><b>2일차</b><span>청송 주왕산</span></button>
+    <button class="tab" role="tab" id="tab-day3" aria-controls="day3" aria-selected="false"><b>3일차</b><span>하회마을·귀가</span></button>
+  </nav>
+
+  <!-- DAY 1 -->
+  <section class="day" id="day1" role="tabpanel" aria-labelledby="tab-day1">
+    <h2>안동 서부 & 도심 페스티벌</h2>
+    <p class="sub">숙소: 임하면 숙소</p>
+    <ol class="rail">
+      <li class="stop move"><div class="time">08:30</div><div class="body"><h3>부산 출발 → 안동 이동</h3><p class="desc">약 3시간, 휴게소 1회 경유</p></div></li>
+      <li class="stop"><div class="time">11:30<small>~12:45</small></div><div class="body">
+        <h3>봉정사</h3>
+        <p class="desc">국내에서 가장 오래된 목조 건물 극락전이 있는 사찰</p>
+        <ul>
+          <li>주차장에서 경내까지 완만한 소나무 숲길이라 아이들도 산책하듯 오를 수 있어요.</li>
+          <li>영화 ‘나랏말싸미’ 배경인 영산암 한옥 마당도 함께 둘러보세요.</li>
+        </ul>
+        <div class="meta"><a class="chip" href="https://map.naver.com/p/search/봉정사" target="_blank" rel="noopener">지도</a></div>
+      </div></li>
+      <li class="stop"><div class="time">13:00<small>~14:30</small></div><div class="body">
+        <h3>풍산 점심</h3>
+        <p class="desc">안동 한우와 간고등어의 고장. 장날(끝자리 3·8일)이면 오일장 구경도 함께</p>
+        <div class="eat">
+          <div class="eat-label">맛집 후보 · 한 곳 고르기</div>
+          <div class="shop">
+            <div class="shop-top"><h4>길풍</h4><span class="tag">간고등어</span></div>
+            <p>간고등어구이 정식, 선비정식, 헛제사밥, 안동찜닭. 반찬이 푸짐하고 주차장이 넓어요.</p>
+            <div class="shop-foot"><span class="tel">054-842-8338</span><a class="chip" href="https://map.naver.com/p/search/안동 풍산 길풍" target="_blank" rel="noopener">지도</a></div>
+            <small>풍산읍 나바우길 · 11:00~21:00 (목 ~19:00)</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>대구식육식당</h4><span class="tag beef">한우</span></div>
+            <p>풍산장터 대표 한우 불고기집. 국물 자작한 순한 불고기라 아이들도 잘 먹어요. 육회도 유명해요.</p>
+            <div class="shop-foot"><span class="tel">054-858-4212</span><a class="chip" href="https://map.naver.com/p/search/풍산 대구식육식당" target="_blank" rel="noopener">지도</a></div>
+            <small>풍산장터 안 · 11:00~21:00</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>안동황우촌 풍산점</h4><span class="tag beef">한우</span></div>
+            <p>불고기전골, 육회비빔밥. 좌식·테이블석이 모두 있고 실내가 넓어요.</p>
+            <div class="shop-foot"><span class="tel">054-855-3352</span><a class="chip" href="https://map.naver.com/p/search/안동황우촌 풍산점" target="_blank" rel="noopener">지도</a></div>
+            <small>풍산장터 인근 · 11:00~21:00</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>황소곳간</h4><span class="tag beef">한우</span></div>
+            <p>풍산장터 옆 한우 고깃집. 고기 질이 좋아 구이로 먹기 좋아요.</p>
+            <div class="shop-foot"><span class="tel">054-843-2001</span><a class="chip" href="https://map.naver.com/p/search/풍산 황소곳간" target="_blank" rel="noopener">지도</a></div>
+            <small>풍산읍 안교리 · 11:00~21:00</small>
+          </div>
+        </div>
+      </div></li>
+      <li class="stop"><div class="time">15:00<small>~18:30</small></div><div class="body">
+        <h3>안동국제탈춤페스티벌</h3>
+        <p class="desc">안동탈춤공원 일대의 국내외 탈춤 공연과 거리 행사</p>
+        <ul>
+          <li>하회탈 만들기, 탈 페이스페인팅 등 어린이 체험 부스가 있어요.</li>
+          <li>유모차 동선이 잘 되어 있고 놀이마당과 푸드트럭이 많아요.</li>
+        </ul>
+        <div class="meta"><span class="chip kid">아이 체험</span><a class="chip" href="https://map.naver.com/p/search/안동탈춤공원" target="_blank" rel="noopener">지도</a></div>
+      </div></li>
+      <li class="stop move"><div class="time">19:00</div><div class="body"><h3>임하면 숙소로 이동·휴식</h3><p class="desc">도심에서 약 20분</p></div></li>
+    </ol>
+  </section>
+
+  <!-- DAY 2 -->
+  <section class="day" id="day2" role="tabpanel" aria-labelledby="tab-day2" hidden>
+    <h2>청송 주왕산 트레킹 & 아이 맞춤 코스</h2>
+    <p class="sub">하산할 때 달기약수 식당에 미리 전화 주문</p>
+    <ol class="rail">
+      <li class="stop move"><div class="time">09:00</div><div class="body"><h3>숙소 출발 → 주왕산국립공원</h3><p class="desc">약 40분</p></div></li>
+      <li class="stop"><div class="time">09:40<small>~12:00</small></div><div class="body">
+        <h3>주왕산 용추폭포 코스</h3>
+        <p class="desc">기암괴석과 협곡이 어우러진 유네스코 세계지질공원</p>
+        <ul>
+          <li>대전사에서 용추폭포까지 이어지는 무장애 탐방로가 아이 동반에 가장 알맞아요.</li>
+          <li>평탄한 흙길과 나무 데크, 왕복 약 4.4km · 2시간이에요.</li>
+        </ul>
+        <div class="meta"><span class="chip kid">유모차 가능</span><span class="chip">왕복 4.4km</span><a class="chip" href="https://map.naver.com/p/search/주왕산 대전사" target="_blank" rel="noopener">지도</a></div>
+      </div></li>
+      <li class="stop"><div class="time">12:30<small>~14:00</small></div><div class="body">
+        <h3>달기약수 백숙 점심</h3>
+        <p class="desc">탄산·철분 약수로 삶아 살이 부드러운 닭백숙(삼계탕). 바위틈 약수도 아이들과 떠 마셔 보세요.</p>
+        <div class="meta"><span class="chip">조리 30~40분 · 하산 때 전화 주문</span></div>
+        <div class="eat">
+          <div class="eat-label">맛집 후보 · 한 곳 고르기</div>
+          <div class="shop">
+            <div class="shop-top"><h4>달기약수닭백숙 해성</h4><span class="tag">백숙</span></div>
+            <p>약수 능이 토종닭백숙과 녹두죽. 실내가 넓고 가족 단위는 방(좌식) 예약이 가능해요.</p>
+            <div class="shop-foot"><span class="tel">전화번호는 지도에서 확인</span><a class="chip" href="https://map.naver.com/p/search/달기약수닭백숙 해성" target="_blank" rel="noopener">지도</a></div>
+            <small>청송읍 중앙로 415 · 10:00~20:00</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>달기약수식당</h4><span class="tag">백숙</span></div>
+            <p>전화 예약하면 도착하자마자 상을 차려 줘요. 닭떡갈비·파전을 곁들이기 좋아요.</p>
+            <div class="shop-foot"><span class="tel">010-3815-7780</span><a class="chip" href="https://map.naver.com/p/search/청송 달기약수식당" target="_blank" rel="noopener">지도</a></div>
+            <small>청송읍 중앙로 478 · 08:30~22:00</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>달기약수촌식당</h4><span class="tag">백숙</span></div>
+            <p>약수터 바로 앞. 쫄깃한 백숙과 녹두죽, 매콤한 닭떡갈비가 있어요.</p>
+            <div class="shop-foot"><span class="tel">054-873-2662</span><a class="chip" href="https://map.naver.com/p/search/달기약수촌식당" target="_blank" rel="noopener">지도</a></div>
+            <small>약수탕 앞 · 11:00~20:00</small>
+          </div>
+          <div class="shop">
+            <div class="shop-top"><h4>청송약수맛집</h4><span class="tag">백숙</span></div>
+            <p>약수탕 옆 오래된 백숙집. 단체 손님이 많아 꼭 미리 주문하세요.</p>
+            <div class="shop-foot"><span class="tel">054-873-2640</span><a class="chip" href="https://map.naver.com/p/search/청송약수맛집" target="_blank" rel="noopener">지도</a></div>
+            <small>약수탕 옆 · 10:00~21:00</small>
+          </div>
+        </div>
+      </div></li>
+      <li class="stop"><div class="time">14:30<small>~16:30</small></div><div class="body">
+        <div class="choice">
+          <div class="choice-label">선택 코스 · 한 곳 고르기</div>
+          <div class="opt">
+            <h3>수석꽃돌박물관 & 청송백자체험관</h3>
+            <p class="desc">주왕산 입구</p>
+            <ul>
+              <li>화산암에 국화·매화 무늬가 핀 꽃돌이 초등학생 호기심을 자극해요.</li>
+              <li>옆 백자체험관·민예촌 마당에서 흙 밟기와 도예 체험을 할 수 있어요.</li>
+            </ul>
+            <div class="meta"><a class="chip" href="https://map.naver.com/p/search/청송군 수석꽃돌 박물관" target="_blank" rel="noopener">지도</a></div>
+          </div>
+          <div class="opt">
+            <h3><span class="or">또는</span> 산소카페 청송정원</h3>
+            <p class="desc">주왕산에서 숙소로 돌아오는 길목</p>
+            <ul>
+              <li>약 4만 평 꽃밭(가을 백일홍)과 우산 대여 포토존이 있어요.</li>
+              <li>넓은 잔디밭에서 아이들이 뛰어놀고 가족사진 남기기 좋아요.</li>
+            </ul>
+            <div class="meta"><a class="chip" href="https://map.naver.com/p/search/산소카페 청송정원" target="_blank" rel="noopener">지도</a></div>
+          </div>
+        </div>
+      </div></li>
+      <li class="stop move"><div class="time">16:30</div><div class="body"><h3>임하면 숙소 복귀·휴식</h3><p class="desc">청송에서 약 40분</p></div></li>
+    </ol>
+  </section>
+
+  <!-- DAY 3 -->
+  <section class="day" id="day3" role="tabpanel" aria-labelledby="tab-day3" hidden>
+    <h2>안동 전통문화 탐방 & 부산 복귀</h2>
+    <p class="sub">09:30 체크아웃</p>
+    <ol class="rail">
+      <li class="stop move"><div class="time">09:30</div><div class="body"><h3>체크아웃 → 병산서원</h3><p class="desc">약 40분</p></div></li>
+      <li class="stop"><div class="time">10:15<small>~11:15</small></div><div class="body">
+        <h3>병산서원</h3>
+        <p class="desc">낙동강 백사장과 병풍 같은 절벽을 마주한 서원</p>
+        <ul><li>만대루 아래로 펼쳐지는 풍경을 보며 여유롭게 머물러 보세요.</li></ul>
+        <div class="meta"><a class="chip" href="https://map.naver.com/p/search/병산서원" target="_blank" rel="noopener">지도</a></div>
+      </div></li>
+      <li class="stop"><div class="time">11:30<small>~14:30</small></div><div class="body">
+        <h3>안동 하회마을 & 점심</h3>
+        <p class="desc">풍산 류씨 집성촌, 유네스코 세계문화유산</p>
+        <ul>
+          <li>마을 입구에서 패밀리 카트(전동차)를 빌리면 넓은 마을을 지치지 않고 돌 수 있어요.</li>
+          <li>하회장터 식당가에서 안동찜닭과 간고등어구이로 점심을 드세요.</li>
+          <li>입구의 하회세계탈박물관은 세계 각국의 탈을 무료로 관람할 수 있어요.</li>
+        </ul>
+        <div class="meta"><span class="chip kid">패밀리 카트</span><a class="chip" href="https://map.naver.com/p/search/안동 하회마을" target="_blank" rel="noopener">지도</a></div>
+      </div></li>
+      <li class="stop move"><div class="time">15:00</div><div class="body"><h3>부산으로 출발</h3><p class="desc">약 2시간 30분~3시간</p></div></li>
+    </ol>
+  </section>
+
+  <section class="tips" aria-labelledby="tips-h">
+    <h2 id="tips-h">가족여행 팁</h2>
+    <ol>
+      <li><b>주왕산 복장 & 유모차</b>용추폭포까지는 경사가 완만해 운동화나 접이식 유모차로 충분해요. 계곡 안쪽은 그늘져 쌀쌀하니 아이들 얇은 겉옷을 챙기세요.</li>
+      <li><b>달기약수 백숙 미리 주문</b>조리에 30~40분 걸리니 하산할 때 전화로 주문해 두면 바로 식사할 수 있어요.</li>
+    </ol>
+  </section>
+  <p class="note">식당 영업시간·휴무와 축제 일정은 출발 전 전화로 한 번 더 확인하세요. 지도 버튼은 네이버 지도로 열려요.</p>
+</div>
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  function show(id,save){
+    tabs.forEach(function(t){
+      var on=t.getAttribute('aria-controls')===id;
+      t.setAttribute('aria-selected',on?'true':'false');
+      t.tabIndex=on?0:-1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden=!on;
+    });
+    if(save){try{localStorage.setItem('trip-day',id)}catch(e){}}
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){show(t.getAttribute('aria-controls'),true);window.scrollTo({top:0,behavior:'smooth'})});
+    t.addEventListener('keydown',function(e){
+      var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(!d)return;
+      var n=tabs[(i+d+tabs.length)%tabs.length]; n.focus(); n.click();
+    });
+  });
+  var start='day1', h=(location.hash||'').slice(1);
+  if(/^day[123]$/.test(h)) start=h;
+  else { try{var s=localStorage.getItem('trip-day'); if(/^day[123]$/.test(s||'')) start=s;}catch(e){} }
+  show(start,false);
+})();
+</script>
+
+</body>
+</html>
